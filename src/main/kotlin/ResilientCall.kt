@@ -1,19 +1,26 @@
 import retrofit2.Call
 import retrofit2.Response
 
-class ResilientCall<T>(private val call: Call<T>, private val retries: Int = 3) {
-
+class ResilientCall<T>(private val call: Call<T>, var config: ResilientConfig = ResilientConfig()) {
     fun call(): Response<T> {
-        repeat(retries) {
+        repeat(config.retries) {
             runCatching {
-                return execute()
+                return tryOnce()
             }
         }
 
-        return execute()
+        return tryOnce()
     }
 
-    private fun execute(): Response<T> = call.clone()
-        .execute()
+    private fun tryOnce() = call.clone().execute()
 
+}
+
+fun <T> Call<T>.retryCall(block: ResilientCall<T>.() -> Unit): Response<T> = ResilientCall(this)
+    .also {
+        block(it)
+    }.call()
+
+fun <T> ResilientCall<T>.config(configBlock: ResilientConfig.() -> Unit) {
+    config = ResilientConfig().apply(configBlock)
 }

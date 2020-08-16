@@ -1,0 +1,1 @@
+class ResilientConfig(var retries: Int = 3)
