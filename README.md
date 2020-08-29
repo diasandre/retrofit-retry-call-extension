@@ -1,6 +1,12 @@
 # retrofit-retry-call-extension
 Retrofit kotlin DSL extension for retrying calls how many times you want
 
+```
+retryCall {
+    config { retries = 3 }
+}
+```
+
 ## Future improvements
 - More configuration options
 
